@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Build container image
+        run: docker build --file Containerfile --tag ha-webapp:ci .
+
+      - name: Test HTTP response
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --detach --name ha-webapp-ci \
+            --publish 127.0.0.1:8080:80 ha-webapp:ci
+          ready=false
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error --max-time 2 \
+              http://127.0.0.1:8080/ --output /tmp/ha-webapp-response.html; then
+              ready=true
+              break
+            fi
+            sleep 1
+          done
+          if [[ "$ready" != true ]]; then
+            echo 'Container did not become ready.' >&2
+            exit 1
+          fi
+          cmp index.html /tmp/ha-webapp-response.html
+
+      - name: Show container logs and clean up
+        if: always()
+        run: |
+          docker logs ha-webapp-ci || true
+          docker rm --force ha-webapp-ci || true
