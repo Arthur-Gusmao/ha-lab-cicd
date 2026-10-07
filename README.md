@@ -60,10 +60,13 @@ Docker can also build and run this Containerfile by replacing `podman` with
 GitHub Actions runs on pushes to `master`, pull requests targeting `master`,
 and manual workflow dispatches. The workflow builds the existing Containerfile,
 starts an Nginx container, and verifies that its HTTP response matches index.html.
-The job uses a GitHub-hosted runner and read-only repository permissions.
+The job uses a GitHub-hosted runner, read-only repository access, and package write access.
 
-CI does not publish images or deploy to WEB01 and WEB02. Registry publication
-and automated deployment are future extensions.
+After successful tests on master, CI publishes the tested image to
+ghcr.io/arthur-gusmao/ha-lab-cicd, tagged with the full Git commit SHA.
+Pull requests do not publish images. Deployment to WEB01 and WEB02 remains manual.
+New GHCR packages are private by default; configure package visibility or
+authenticate on deployment hosts before pulling the image.
 
 ## Contributing
 
