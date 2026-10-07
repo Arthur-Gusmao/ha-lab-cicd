@@ -27,7 +27,8 @@ web applications, and continuous integration.
 
 This diagram describes the lab topology. This repository contains the web
 application and its CI workflow; it does not provision the hosts, configure
-HAProxy or Keepalived, or deploy to the lab automatically.
+HAProxy or Keepalived. Optional WSL-based deployment is documented in
+[deploy/README.md](deploy/README.md).
 
 ## Repository layout
 
@@ -64,7 +65,8 @@ The job uses a GitHub-hosted runner, read-only repository access, and package wr
 
 After successful tests on master, CI publishes the tested image to
 ghcr.io/arthur-gusmao/ha-lab-cicd, tagged with the full Git commit SHA.
-Pull requests do not publish images. Deployment to WEB01 and WEB02 remains manual.
+Pull requests do not publish images. Optional local continuous deployment is
+provided in [deploy/README.md](deploy/README.md).
 New GHCR packages are private by default; configure package visibility or
 authenticate on deployment hosts before pulling the image.
 

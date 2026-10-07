@@ -23,6 +23,9 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Test local deployment controller
+        run: python3 -m unittest discover -s deploy -p 'test_*.py' -v
+
       - name: Build container image
         run: docker build --file Containerfile --tag ha-webapp:ci .
 
